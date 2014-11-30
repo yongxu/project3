@@ -4,6 +4,7 @@
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
 var runSequence = require('run-sequence');
+var mainBowerFiles = require('main-bower-files');
 
 var browserSync = require('browser-sync');
 var reload = browserSync.reload;
@@ -61,12 +62,46 @@ gulp.task('serve', ['styles'], function () {
 
   gulp.watch(['app/*.html','app/elements/*.js','app/src/**/*.js'], reload);
   gulp.watch(['app/src/**/*.coffee'], ['coffee']);
-  gulp.watch(['app/dest/*'], reload);
   gulp.watch(['app/styles/**/*.{scss,css}'], ['styles']);
   gulp.watch(['app/src/**/*.js'], ['jshint']);
 });
 
-// Build Production Files, the Default Task
-gulp.task('default', function (cb) {
-  runSequence(['styles','coffee'], ['serve'], cb);
+gulp.task('server-static-clean', function () {
+  return gulp.src('server/static', {read: false})
+    .pipe($.clean());
 });
+
+gulp.task('to-server',['server-static-clean'],function(){
+  return gulp.src(['./app/**/*','!**/examples/**','!**/example/**',
+                  '!**/tutorial/**','!**/tutorials/**',
+                  '!**/test/**','!**/tests/**','!**/docs/**'],{base:'./app'})
+    .pipe(gulp.dest('server/static'));
+});
+/*
+gulp.task('vulcanize', function () {
+    var DEST_DIR = 'dist';
+
+    return gulp.src('app/index.html')
+        .pipe($.vulcanize({
+            dest: DEST_DIR
+        }))
+        .pipe(gulp.dest(DEST_DIR));
+});*/
+/*
+gulp.task('bower', function() {
+  return gulp.src(mainBowerFiles(), {
+      base: 'app/bower_components'
+    })
+    .pipe(gulp.dest('server/public/bower_components'));
+});*/
+
+// Build Production Files, the Default Task
+/*gulp.task('default', function (cb) {
+  runSequence(['styles','coffee'], ['serve'], cb);
+});*/
+
+gulp.task('default', ['to-server'],function(){
+
+});
+
+

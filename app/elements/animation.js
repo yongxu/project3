@@ -76,6 +76,15 @@ function animation() {
         spriteContainer.removeChildren();
     };
 
+    this.updateGrid= function (sprites){
+        startAnimate=false;
+        this.removeAllSprites();
+        for (var name in sprites){
+            this.addSprite(name,sprites[name].x,sprites[name].y);
+        }
+        startAnimate=true;
+    }.bind(this);
+
     function animate() {
 
         renderer.render(stage);

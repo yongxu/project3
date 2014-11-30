@@ -1,13 +1,38 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
     <link rel="import" href="elements/pixi-element.html">
-  </head>
-  <body>
+</head>
+
+<body>
     <pixi-element>
-	    <script type="text/javascript">
-	    </script>
     </pixi-element>
-  </body>
+    <script type="text/javascript">
+    window.addEventListener('polymer-ready', function(e) {
+
+        var tileGrid=document.querySelector('pixi-element');
+        namespace = '/tile';
+        var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
+        socket.on('connect', function() {
+            socket.emit('client request', {
+                state: 'connected'
+            });
+        });
+
+        socket.on('server response', function(msg) {
+            console.log(msg);
+            if(msg.state=='update') tileGrid.updateGrid(msg.data);
+            pushToServer({state:'done'});
+        });
+
+        function pushToServer(msg){
+            socket.emit('client request', msg);
+        }
+    });
+    </script>
+</body>
+
 </html>
