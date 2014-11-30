@@ -1,44 +1,50 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<script src="../bower_components/pixi/bin/pixi.js"></script>
+<script src="../bower_components/pixi/bin/pixi.dev.js"></script>
+
 <polymer-element name="pixi-element" constructor="PixiElement" attributes="width height">
+  <script src="animation.js"></script>
   <template>
     <canvas id="view">    
     </canvas>
   </template>
   <script>
     Polymer({
-      width:800,
-      height:600,
+      width:1000,
+      height:800,
       publish: {
         backgroundColor:0xFFFFFF,
         transparent:false,
-        antialias:false,
+        antialias:true,
         preserveDrawingBuffer:false,
         resolution:1,
-        setup:function(){},
-        draw:function(){}
+        tileSize :32,
+        gridWidth :20,
+        gridHeight :20
       },
       ready:function(){
-        // create an new instance of a pixi stage
-        this.stage = new PIXI.Stage(0x66FF99);
-
-        // create a renderer instance.
-        this.renderer = PIXI.autoDetectRenderer(this.width, this.height,{view:this.$.view,
-                                                                        transparent,
-                                                                        antialias,
-                                                                        preserveDrawingBuffer,
-                                                                        resolution});
-        setup(stage);
-        requestAnimFrame( animate );
-
-        function animate() {
-
-          requestAnimFrame( animate );
-
-          // render the stage
-          draw(stage);
-          renderer.render(stage);
+        animation.bind(this)();
+        var spritesurl={
+          'wall':"../assets/crystal_wall02.png",
+          'teapot': "../assets/magic_lamp.png",
+          'gold pile': "../assets/gold_pile.png",
+          'apple': "../assets/apple.png",
+          'coin': "../assets/hud_coins.png",
+          'blue gem': "../assets/hud_gem_blue.png",
+          'red gem': "../assets/hud_gem_red.png",
+          'yellow gem': "../assets/hud_gem_yellow.png",
+          'dragon': "../assets/swamp_dragon.png",
+          'draco green': "../assets/draco-base-green.png",
+          'player' : "../assets/ancient_lich.png"
         }
+        this.initTileGrid({canvasBackground:"../assets/grass1.png", background:"../assets/dirt0.png",spritesUrl:spritesurl});
+        this.addSprite('blue gem', 5, 5);
+        this.addSprite('coin', 5, 6);
+        this.addSprite('apple', 5, 7);
+
+        this.addSprite('wall', 10, 10);
+        this.addSprite('dragon', 12, 12);
+        this.addSprite('draco green', 10, 12);
+        this.addSprite('player', 13, 12);
       }
     });
   </script>

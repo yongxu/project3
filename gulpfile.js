@@ -56,10 +56,10 @@ gulp.task('serve', ['styles'], function () {
     // Note: this uses an unsigned certificate which on first access
     //       will present a certificate warning in the browser.
     // https: true,
-    server: ['./app', 'app/dest']
+    server: ['./app','app/elements/*.js','app/assets', 'app/dest']
   });
 
-  gulp.watch(['app/*.html'], reload);
+  gulp.watch(['app/*.html','app/elements/*.js','app/src/**/*.js'], reload);
   gulp.watch(['app/src/**/*.coffee'], ['coffee']);
   gulp.watch(['app/dest/*'], reload);
   gulp.watch(['app/styles/**/*.{scss,css}'], ['styles']);
