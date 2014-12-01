@@ -57,16 +57,6 @@ function animation() {
 
 
     this.spriteTextures = {
- /*       'wall': PIXI.Texture.fromImage("../assets/crystal_wall02.png"),
-        'teapot': PIXI.Texture.fromImage("../assets/magic_lamp.png"),
-        'gold pile': PIXI.Texture.fromImage("../assets/gold_pile.png"),
-        'apple': PIXI.Texture.fromImage("../assets/apple.png"),
-        'coin': PIXI.Texture.fromImage("../assets/hud_coins.png"),
-        'blue gem': PIXI.Texture.fromImage("../assets/hud_gem_blue.png"),
-        'red gem': PIXI.Texture.fromImage("../assets/hud_gem_red.png"),
-        'yellow gem': PIXI.Texture.fromImage("../assets/hud_gem_yellow.png"),
-        'dragon': PIXI.Texture.fromImage("../assets/swamp_dragon.png"),
-        'draco green': PIXI.Texture.fromImage("../assets/draco-base-green.png")*/
     };
 
     var loadSpriteTexture=this.loadSpriteTexture=function(name,url){
@@ -82,10 +72,6 @@ function animation() {
     var makeSprite = this.makeSprite = function(name, x, y) {
         return createTileSprite(this.spriteTextures[name], x, y);
     }.bind(this);
-
-    var add = this.add = function(sprite,x,y) {
-        spriteContainer.addChild(sprite,x,y);
-    };
 
     var removeSprite = this.removeSprite = function(sprite) {
         spriteContainer.removeChild(sprite);
@@ -113,82 +99,63 @@ function animation() {
     }
 
     (function(){
-        Sk.builtin.sprite=function(name,x,y){
 
-            function createSprite(name,x,y){
-                this.name=name.v;
-                this.x=x.v;
-                this.y=y.v;
-                this.spriteObject=addSprite(this.name,this.x,this.y);
 
-                this.__class__=Sk.builtin.sprite;
+        Sprite=Sk.misceval.buildClass({"__name__":"animation"},function($gbl, $loc){
 
-                this.moveTo=function(x,y){
-                    this.x=x;
-                    this.y=y;
-                    this.spriteObject.moveTo(x,y);
-                }.bind(this);
+            $loc.__init__ = new Sk.builtin.func(function (self,name,x,y) {
+                self.name=name.v;
+                self.x=x.v;
+                self.y=y.v;
+                self.sprite=addSprite(self.name,self.x,self.y);
+                
+            });
 
-                this.remove=function(){
-                    removeSprite(this.spriteObject);
-                }
-            }
-            return new createSprite(name,x,y);
+            $loc.moveTo=new Sk.builtin.func(function(self,x,y){
+                self.x=x.v;
+                self.y=y.v;
+                self.sprite.moveTo(self.x,self.y);
+            });
+
+            $loc.position=$loc.moveTo;
+
+            $loc.hide=$loc.remove=new Sk.builtin.func(function(self){
+                removeSprite(self.sprite);
+            });
+
+            $loc.show=$loc.putBack=new Sk.builtin.func(function(self){
+                spriteContainer.addChild(self.sprite);
+            });
             
+
+        },"Sprite");
+
+        Sk.builtin.Sprite=Sprite;
+        goog.exportSymbol("Sk.builtin.Sprite", Sk.builtin.Sprite);
+        Sk.builtins["Sprite"]=Sk.builtin.Sprite;
+
+
+        Sk.builtin.removeAllSprites=function(){
+            spriteContainer.removeChildren();
         }
+        goog.exportSymbol("Sk.builtin.removeAllSprites", Sk.builtin.removeAllSprites);
+        Sk.builtins["removeAllSprites"]=Sk.builtin.removeAllSprites;
 
-        Sk.builtin.sprite.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj("sprite", Sk.builtin.sprite);
-        Sk.builtin.sprite.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
-
-
-        Sk.builtin.moveTo=function(sprite,x,y){
-            sprite.moveTo(x.v,y.v);
-
-            return this;
-        }
-
-        Sk.builtin.moveTo.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj("moveTo", Sk.builtin.moveTo);
-        Sk.builtin.moveTo.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
-
-        Sk.builtin.remove=function(sprite,x,y){
-            sprite.remove();
-
-            return this;
-        }
-
-        Sk.builtin.remove.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj("remove", Sk.builtin.remove);
-        Sk.builtin.remove.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
-
-        // Sk.builtin.sprite.prototype["moveTo"] = new Sk.builtin.func(function (self,x,y) {
-        //         self.x=x.v;
-        //         self.y=y.v;
-        //         self.spriteObject.moveTo(self.x,self.y);
-        // });
-
-
-         // Sk.misceval.buildClass(mod, function($gbl, $loc) {
-         //     $loc.__init__ = new Sk.builtin.func(function(self) {
-         //         self.stack = [];
-         //     });
-
-         //     $loc.push = new Sk.builtin.func(function(self,x) {
-         //         self.stack.push(x);
-         //     });
-         //     $loc.pop = new Sk.builtin.func(function(self) {
-         //         return self.stack.pop();
-         //     });
-         //        },
-         //        'Stack', []);
-
-
-
-        goog.exportSymbol("Sk.builtin.sprite", Sk.builtin.sprite);
-        goog.exportSymbol("Sk.builtin.moveTo", Sk.builtin.moveTo);
-        goog.exportSymbol("Sk.builtin.remove", Sk.builtin.remove);
-        Sk.builtins["remove"]=Sk.builtin.remove;
-        Sk.builtins["sprite"]=Sk.builtin.sprite;
-        Sk.builtins["moveTo"]=Sk.builtin.moveTo;
-
+        Sk.builtin.sleep= new Sk.builtin.func(function(delay) {
+            var susp = new Sk.misceval.Suspension();
+            susp.resume = function() { return Sk.builtin.none.none$; }
+            susp.data = {type: "Sk.promise", promise: new Promise(function(resolve) {
+                if (typeof setTimeout === undefined) {
+                    // We can't sleep (eg test environment), so resume immediately
+                    resolve();
+                } else {
+                    setTimeout(resolve, Sk.ffi.remapToJs(delay)*1000);
+                }
+            })};
+            return susp;
+        });
+        goog.exportSymbol("Sk.builtin.sleep", Sk.builtin.sleep);
+        Sk.builtins["sleep"]=Sk.builtin.sleep;
 
     })();
 }
