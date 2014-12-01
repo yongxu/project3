@@ -122,7 +122,7 @@ function animation() {
 
             this.__class__=Sk.builtin.sprite;
 
-            this.position=function(x,y){
+            this.moveTo=function(x,y){
                 this.x=x.v;
                 this.y=y.v;
                 this.spriteObject.moveTo(this.x,this.y);
@@ -147,6 +147,14 @@ function animation() {
         Sk.builtin.moveTo.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj("moveTo", Sk.builtin.moveTo);
         Sk.builtin.moveTo.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
 
+        Sk.builtin.remove=function(sprite,x,y){
+            sprite.remove();
+
+            return this;
+        }
+
+        Sk.builtin.remove.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj("remove", Sk.builtin.remove);
+        Sk.builtin.remove.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
 
         // Sk.builtin.sprite.prototype["moveTo"] = new Sk.builtin.func(function (self,x,y) {
         //         self.x=x.v;
@@ -173,6 +181,8 @@ function animation() {
 
         goog.exportSymbol("Sk.builtin.sprite", Sk.builtin.sprite);
         goog.exportSymbol("Sk.builtin.moveTo", Sk.builtin.moveTo);
+        goog.exportSymbol("Sk.builtin.remove", Sk.builtin.remove);
+        Sk.builtins["remove"]=Sk.builtin.remove;
         Sk.builtins["sprite"]=Sk.builtin.sprite;
         Sk.builtins["moveTo"]=Sk.builtin.moveTo;
 
