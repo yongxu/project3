@@ -108,7 +108,7 @@ function animation() {
                 self.x=x.v;
                 self.y=y.v;
                 self.sprite=addSprite(self.name,self.x,self.y);
-                
+
             });
 
             $loc.moveTo=new Sk.builtin.func(function(self,x,y){
@@ -126,7 +126,7 @@ function animation() {
             $loc.show=$loc.putBack=new Sk.builtin.func(function(self){
                 spriteContainer.addChild(self.sprite);
             });
-            
+
 
         },"Sprite");
 
