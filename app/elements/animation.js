@@ -114,6 +114,7 @@ function animation() {
 
     (function(){
         Sk.builtin.sprite=function(name,x,y){
+
             this.name=name.v;
             this.x=x.v;
             this.y=y.v;
@@ -135,7 +136,46 @@ function animation() {
 
         Sk.builtin.sprite.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj("sprite", Sk.builtin.sprite);
         Sk.builtin.sprite.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
+
+
+        Sk.builtin.moveTo=function(sprite,x,y){
+            sprite.moveTo(x.v,y.v);
+
+            return this;
+        }
+
+        Sk.builtin.moveTo.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj("moveTo", Sk.builtin.moveTo);
+        Sk.builtin.moveTo.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
+
+
+        // Sk.builtin.sprite.prototype["moveTo"] = new Sk.builtin.func(function (self,x,y) {
+        //         self.x=x.v;
+        //         self.y=y.v;
+        //         self.spriteObject.moveTo(self.x,self.y);
+        // });
+
+
+         // Sk.misceval.buildClass(mod, function($gbl, $loc) {
+         //     $loc.__init__ = new Sk.builtin.func(function(self) {
+         //         self.stack = [];
+         //     });
+
+         //     $loc.push = new Sk.builtin.func(function(self,x) {
+         //         self.stack.push(x);
+         //     });
+         //     $loc.pop = new Sk.builtin.func(function(self) {
+         //         return self.stack.pop();
+         //     });
+         //        },
+         //        'Stack', []);
+
+
+
         goog.exportSymbol("Sk.builtin.sprite", Sk.builtin.sprite);
+        goog.exportSymbol("Sk.builtin.moveTo", Sk.builtin.moveTo);
         Sk.builtins["sprite"]=Sk.builtin.sprite;
+        Sk.builtins["moveTo"]=Sk.builtin.moveTo;
+
+
     })();
 }
