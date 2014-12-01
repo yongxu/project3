@@ -46,10 +46,10 @@ function animation() {
         tileSprite.height = this.tileSize;
         tileSprite.position.x = this.x0 + x * this.tileSize;
         tileSprite.position.y = this.y0 + y * this.tileSize;
-        elethis=this
+        outerThis=this
         tileSprite.moveTo=function(x,y){
-            this.position.x = elethis.x0 + x * elethis.tileSize;
-            this.position.y = elethis.y0 + y * elethis.tileSize;
+            this.position.x = outerThis.x0 + x * outerThis.tileSize;
+            this.position.y = outerThis.y0 + y * outerThis.tileSize;
         }.bind(tileSprite)
         return tileSprite;
     }.bind(this);
@@ -115,23 +115,26 @@ function animation() {
     (function(){
         Sk.builtin.sprite=function(name,x,y){
 
-            this.name=name.v;
-            this.x=x.v;
-            this.y=y.v;
-            this.spriteObject=addSprite(this.name,this.x,this.y);
+            function createSprite(name,x,y){
+                this.name=name.v;
+                this.x=x.v;
+                this.y=y.v;
+                this.spriteObject=addSprite(this.name,this.x,this.y);
 
-            this.__class__=Sk.builtin.sprite;
+                this.__class__=Sk.builtin.sprite;
 
-            this.moveTo=function(x,y){
-                this.x=x;
-                this.y=y;
-                this.spriteObject.moveTo(x,y);
-            }.bind(this);
+                this.moveTo=function(x,y){
+                    this.x=x;
+                    this.y=y;
+                    this.spriteObject.moveTo(x,y);
+                }.bind(this);
 
-            this.remove=function(){
-                removeSprite(this.spriteObject);
-            };
-            return this;
+                this.remove=function(){
+                    removeSprite(this.spriteObject);
+                }
+            }
+            return new createSprite(name,x,y);
+            
         }
 
         Sk.builtin.sprite.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj("sprite", Sk.builtin.sprite);
