@@ -46,11 +46,11 @@ function animation() {
         tileSprite.height = this.tileSize;
         tileSprite.position.x = this.x0 + x * this.tileSize;
         tileSprite.position.y = this.y0 + y * this.tileSize;
-
+        elethis=this
         tileSprite.moveTo=function(x,y){
-            this.position.x = this.x0 + x * this.tileSize;
-            this.position.y = this.y0 + y * this.tileSize;
-        }
+            this.position.x = elethis.x0 + x * elethis.tileSize;
+            this.position.y = elethis.y0 + y * elethis.tileSize;
+        }.bind(tileSprite)
         return tileSprite;
     }.bind(this);
 
@@ -123,10 +123,10 @@ function animation() {
             this.__class__=Sk.builtin.sprite;
 
             this.moveTo=function(x,y){
-                this.x=x.v;
-                this.y=y.v;
-                this.spriteObject.moveTo(this.x,this.y);
-            };
+                this.x=x;
+                this.y=y;
+                this.spriteObject.moveTo(x,y);
+            }.bind(this);
 
             this.remove=function(){
                 removeSprite(this.spriteObject);
