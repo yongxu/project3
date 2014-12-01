@@ -46,6 +46,11 @@ function animation() {
         tileSprite.height = this.tileSize;
         tileSprite.position.x = this.x0 + x * this.tileSize;
         tileSprite.position.y = this.y0 + y * this.tileSize;
+
+        tileSprite.moveTo=function(x,y){
+            this.position.x = this.x0 + x * this.tileSize;
+            this.position.y = this.y0 + y * this.tileSize;
+        }
         return tileSprite;
     }.bind(this);
 
@@ -69,7 +74,21 @@ function animation() {
     }.bind(this);
 
     var addSprite = this.addSprite = function(name, x, y) {
-        spriteContainer.addChild(createTileSprite(this.spriteTextures[name], x, y));
+        var sp=createTileSprite(this.spriteTextures[name], x, y)
+        spriteContainer.addChild(sp);
+        return sp;
+    }.bind(this);
+
+    var makeSprite = this.makeSprite = function(name, x, y) {
+        return createTileSprite(this.spriteTextures[name], x, y);
+    }.bind(this);
+
+    var add = this.add = function(sprite,x,y) {
+        spriteContainer.addChild(sprite,x,y);
+    };
+
+    var removeSprite = this.removeSprite = function(sprite) {
+        spriteContainer.removeChild(sprite);
     };
 
     var removeAllSprites = this.removeAllSprites = function() {
@@ -93,5 +112,30 @@ function animation() {
 
     }
 
-    console.log(Sk);
+    (function(){
+        Sk.builtin.sprite=function(name,x,y){
+            this.name=name.v;
+            this.x=x.v;
+            this.y=y.v;
+            this.spriteObject=addSprite(this.name,this.x,this.y);
+
+            this.__class__=Sk.builtin.sprite;
+
+            this.position=function(x,y){
+                this.x=x.v;
+                this.y=y.v;
+                this.spriteObject.moveTo(this.x,this.y);
+            };
+
+            this.remove=function(){
+                removeSprite(this.spriteObject);
+            };
+            return this;
+        }
+
+        Sk.builtin.sprite.prototype.ob$type = Sk.builtin.type.makeIntoTypeObj("sprite", Sk.builtin.sprite);
+        Sk.builtin.sprite.prototype.tp$getattr = Sk.builtin.object.prototype.GenericGetAttr;
+        goog.exportSymbol("Sk.builtin.sprite", Sk.builtin.sprite);
+        Sk.builtins["sprite"]=Sk.builtin.sprite;
+    })();
 }
