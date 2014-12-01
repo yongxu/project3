@@ -4,7 +4,7 @@
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
 var runSequence = require('run-sequence');
-var mainBowerFiles = require('main-bower-files');
+//var mainBowerFiles = require('main-bower-files');
 
 var browserSync = require('browser-sync');
 var reload = browserSync.reload;
@@ -100,7 +100,7 @@ gulp.task('bower', function() {
   runSequence(['styles','coffee'], ['serve'], cb);
 });*/
 
-gulp.task('default', ['to-server'],function(){
+gulp.task('default', ['serve'],function(){
 
 });
 

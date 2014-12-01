@@ -3,34 +3,37 @@
 
 <head>
     <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
-    <link rel="import" href="elements/pixi-element.html">
+    <link rel="import" href="elements/python-element.html">
+    <link href="bower_components/core-icon/core-icon.html" rel="import">
+    <link href="bower_components/core-icons/core-icons.html" rel="import">
+    <link href="bower_components/paper-button/paper-button.html" rel="import">
 </head>
 
-<body>
-    <pixi-element>
-    </pixi-element>
+<body fullbleed vertical layout unresolved>
+    <textarea id="code" rows="40">
+def fib(n):
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fib(n-1) + fib(n-2)
+
+for n in range(1,20):
+    print fib(n)
+    </textarea>
+    <paper-button raised id="run">
+      <core-icon icon="favorite"></core-icon>
+      execute
+    </paper-button>
+    <python-element flex></python-element>
     <script type="text/javascript">
     window.addEventListener('polymer-ready', function(e) {
+      document.querySelector('#run').addEventListener("click", function( event ) {
+            var py=document.querySelector('python-element');
+            py.run(document.querySelector('#code').value);
+          });
 
-        var tileGrid=document.querySelector('pixi-element');
-        namespace = '/tile';
-        var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
-        socket.on('connect', function() {
-            socket.emit('client request', {
-                state: 'connected'
-            });
-        });
-
-        socket.on('server response', function(msg) {
-            console.log(msg);
-            if(msg.state=='update') tileGrid.updateGrid(msg.data);
-            pushToServer({state:'done'});
-        });
-
-        function pushToServer(msg){
-            socket.emit('client request', msg);
-        }
     });
     </script>
 </body>
