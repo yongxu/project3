@@ -92,4 +92,6 @@ function animation() {
         if(startAnimate) requestAnimFrame(animate);
 
     }
+
+    console.log(Sk);
 }
