@@ -12,6 +12,7 @@
     <link rel="import" href="elements/python-element.html">
     <link href="bower_components/core-icon/core-icon.html" rel="import">
     <link href="bower_components/core-icons/core-icons.html" rel="import">
+    <link href="bower_components/core-ajax/core-ajax.html" rel="import">
     <link href="bower_components/paper-button/paper-button.html" rel="import">
 </head>
 
@@ -45,9 +46,13 @@ o.moveTo(5,5)
     </paper-button>
     <python-element flex></python-element>
 </div>
-
+<core-ajax auto="" url="code/code.py" handleas="text" hidden=""></core-ajax>
     <script type="text/javascript">
     window.addEventListener('polymer-ready', function(e) {
+        var ajax = document.querySelector("core-ajax");
+        ajax.addEventListener("core-response", function(e) {
+          document.querySelector('#code').value = e.detail.response;
+        });
       document.querySelector('#run').addEventListener("click", function( event ) {
             var py=document.querySelector('python-element');
             py.run(document.querySelector('#code').value);
