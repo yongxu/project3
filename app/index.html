@@ -6,8 +6,6 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js" type="text/javascript"></script>
     <script src="../lib/skulpt.js"></script>
     <script src="../lib/skulpt-stdlib.js"></script>
-<!--     <script src="bower_components/skulpt/skulpt.min.js"></script>
-    <script src="bower_components/skulpt/skulpt-stdlib.js"></script> -->
     <link rel="import" href="elements/pixi-element.html">
     <link rel="import" href="elements/python-element.html">
     <link href="bower_components/core-icon/core-icon.html" rel="import">
@@ -18,45 +16,32 @@
 
 <body fullbleed unresolved>
 
-<div>
-    <pixi-element flex></pixi-element>
-</div>
+    <div>
+        <pixi-element flex></pixi-element>
+    </div>
 
-<div vertical layout flex>
-    <textarea id="code" rows="40">
-def fib(n):
-    if n == 0:
-        return 0
-    elif n == 1:
-        return 1
-    else:
-        return fib(n-1) + fib(n-2)
-
-for n in range(1,20):
-    print fib(n)
-o=Sprite("apple",3,3)
-o.moveTo(5,5)
-o.remove()
-o=Sprite("apple",3,3)
-o.moveTo(5,5)
-    </textarea>
-    <paper-button raised id="run">
-      <core-icon icon="favorite"></core-icon>
-      execute
-    </paper-button>
-    <python-element flex></python-element>
-</div>
-<core-ajax auto="" url="code/code.py" handleas="text" hidden=""></core-ajax>
+    <div vertical layout flex>
+        <textarea id="code" rows="40">
+            loading.........
+        </textarea>
+        <paper-button raised id="run">
+            <core-icon icon="favorite"></core-icon>
+            execute
+        </paper-button>
+        <python-element flex></python-element>
+    </div>
+    <core-ajax auto="" url="code/code.py" handleas="text" hidden=""></core-ajax>
     <script type="text/javascript">
     window.addEventListener('polymer-ready', function(e) {
         var ajax = document.querySelector("core-ajax");
         ajax.addEventListener("core-response", function(e) {
-          document.querySelector('#code').value = e.detail.response;
+            document.querySelector('#code').value = e.detail.response;
         });
-      document.querySelector('#run').addEventListener("click", function( event ) {
-            var py=document.querySelector('python-element');
+        document.querySelector('#run').addEventListener("click", function(event) {
+            document.querySelector('pixi-element').resetCanvas();
+            var py = document.querySelector('python-element');
             py.run(document.querySelector('#code').value);
-          });
+        });
 
     });
     </script>

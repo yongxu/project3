@@ -18,7 +18,7 @@
                 return Sk.builtinFiles["files"][x];
             }
             var outf = function(text){
-            	this.$.output.innerHTML+=text;
+            	this.$.output.value+=text;
             }.bind(this);
             var code = pycode? pycode : this.$.code.getDistributedNodes()[0].data;
             this.$.output.setAttribute('async',true);;
@@ -29,7 +29,7 @@
                 read: builtinRead
             });
             try {
-                eval(Sk.importMainWithBody("<stdin>", false, code));
+                Sk.importMainWithBody("<stdin>", false, code,true);
             } catch (e) {
                 alert(e.toString())
             }

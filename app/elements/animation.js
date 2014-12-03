@@ -54,7 +54,9 @@ function animation() {
         return tileSprite;
     }.bind(this);
 
-
+    var resetCanvas=this.resetCanvas=function(){
+        spriteContainer.removeChildren();
+    }.bind(this);
 
     this.spriteTextures = {
     };
@@ -141,21 +143,39 @@ function animation() {
         goog.exportSymbol("Sk.builtin.removeAllSprites", Sk.builtin.removeAllSprites);
         Sk.builtins["removeAllSprites"]=Sk.builtin.removeAllSprites;
 
-        Sk.builtin.sleep= new Sk.builtin.func(function(delay) {
-            var susp = new Sk.misceval.Suspension();
-            susp.resume = function() { return Sk.builtin.none.none$; }
-            susp.data = {type: "Sk.promise", promise: new Promise(function(resolve) {
-                if (typeof setTimeout === undefined) {
-                    // We can't sleep (eg test environment), so resume immediately
-                    resolve();
-                } else {
-                    setTimeout(resolve, Sk.ffi.remapToJs(delay)*1000);
-                }
-            })};
-            return susp;
+        Sk.builtin.asyncLoop= new Sk.builtin.func(function(f,delay) {
+
+            id=setInterval(function(){
+                Sk.misceval.callsimOrSuspend(f);
+            },Sk.ffi.remapToJs(delay)*1000);
+            return id;
         });
-        goog.exportSymbol("Sk.builtin.sleep", Sk.builtin.sleep);
-        Sk.builtins["sleep"]=Sk.builtin.sleep;
+        goog.exportSymbol("Sk.builtin.asyncLoop", Sk.builtin.asyncLoop);
+        Sk.builtins["asyncLoop"]=Sk.builtin.asyncLoop;
+
+        Sk.builtin.clearAsyncLoop= new Sk.builtin.func(function(id) {
+            clearInterval(id);
+        });
+        goog.exportSymbol("Sk.builtin.clearAsyncLoop", Sk.builtin.clearAsyncLoop);
+        Sk.builtins["clearAsyncLoop"]=Sk.builtin.clearAsyncLoop;
+
+
+        Sk.builtin.async= new Sk.builtin.func(function(f,delay) {
+
+            return setTimeout(function(){
+                Sk.misceval.callsimOrSuspend(f);
+            },Sk.ffi.remapToJs(delay)*1000);
+
+        });
+        goog.exportSymbol("Sk.builtin.async", Sk.builtin.async);
+        Sk.builtins["async"]=Sk.builtin.async;
+
+        Sk.builtin.clearAsync= new Sk.builtin.func(function(id) {
+            clearTimeout(id);
+        });
+        goog.exportSymbol("Sk.builtin.clearAsync", Sk.builtin.clearAsync);
+        Sk.builtins["clearAsync"]=Sk.builtin.clearAsync;
+
 
     })();
 }
