@@ -24,6 +24,24 @@ class Minion():
         return (self.x,self.y)
     def aroundInfo(self):
         return self.board.aroundInfo(self.x,self.y);
+    def move(self,cmd):
+        if cmd=='up':
+            self.setPosition(self.x,self.y-1)
+        elif cmd=='down':
+            self.setPosition(self.x,self.y+1)
+        elif cmd=='left':
+            self.setPosition(self.x-1,self.y)
+        elif cmd=='right':
+            self.setPosition(self.x+1,self.y)
+    def okToMove(self,cmd,okToLand):
+        if cmd=='up':
+            return self.board.positionHas(self.x,self.y-1,okToLand)
+        elif cmd=='down':
+            return self.board.positionHas(self.x,self.y+1,okToLand)
+        elif cmd=='left':
+            return self.board.positionHas(self.x-1,self.y,okToLand)
+        elif cmd=='right':
+            return self.board.positionHas(self.x+1,self.y,okToLand)
 
 
 
@@ -43,6 +61,9 @@ class Board():
             return OUTSIDEMAP;
         else:
             return self.map[x][y]
+
+    def positionHas(self,x,y,list):
+        return self.positionInfo(x,y) in list
     def randomFind(self,target):
         x=random.randint(0,20)
         y=random.randint(0,20)
@@ -51,12 +72,11 @@ class Board():
         else:
             return self.randomFind(target)
 
-
     def aroundInfo(self,x,y):
         return {'up':self.positionInfo(x,y-1),
                 'down':self.positionInfo(x,y+1),
-                'left':self.positionInfo(x+1,y),
-                'right':self.positionInfo(x-1,y)}
+                'left':self.positionInfo(x-1,y),
+                'right':self.positionInfo(x+1,y)}
     def createWall(self,x,y):
         Sprite('wall',x,y)
         self.map[x][y]=1
@@ -104,7 +124,7 @@ class Board():
         for i in [1, 21]:
             self.createWall(i-1,2-1)
 
-board=Board((1,1),(2,2),(3,3))
+board=Board((1,1),(1,18),(3,3))
 
 def test():
  #   (x,y)=board.player.getPosition()
@@ -116,8 +136,27 @@ def test():
     (x,y)=board.randomFind(0)
     board.monsters[1].setPosition(x,y)
 #    board.player.setPosition((x+1)%20,(y+1)%20)
-id=asyncLoop(test,0.1)
+#id=asyncLoop(test,0.1)
 # def clearLoop():
 #     print "loop stoped!"
 #     clearAsyncLoop(id)
 # async(clearLoop,5)
+
+def key(k,id):
+    print k,id
+    if id=="Up":
+        if board.player.okToMove("up",[EMPTY,APPLE]):
+            board.player.move("up")
+    elif id=="Down":
+        if board.player.okToMove("down",[EMPTY,APPLE]):
+            board.player.move("down")
+    elif id=="Left":
+        if board.player.okToMove("left",[EMPTY,APPLE]):
+            board.player.move("left")
+    elif id=="Right":
+        print board.player.okToMove("right",[EMPTY,APPLE])
+        if board.player.okToMove("right",[EMPTY,APPLE]):
+            print "moveright"
+            board.player.move("right")
+
+keydown(key)

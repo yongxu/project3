@@ -12,10 +12,16 @@
     <link href="bower_components/core-icons/core-icons.html" rel="import">
     <link href="bower_components/core-ajax/core-ajax.html" rel="import">
     <link href="bower_components/paper-button/paper-button.html" rel="import">
+    <link href="bower_components/paper-fab/paper-fab.html" rel="import">
+
 </head>
 
 <body fullbleed unresolved>
-
+<!--     <paper-button raised id="run_top" style="position: absolute; top:10px; background: #4285f4; color: #fff;">
+        <core-icon icon="inbox"></core-icon>
+        execute
+    </paper-button> -->
+    <paper-fab id="run_top" style="position: absolute; top:10px; left:10px; color: #fff;" icon="arrow-forward" title="run" role="button" aria-label="arrow-forward"></paper-fab>
     <div>
         <pixi-element flex></pixi-element>
     </div>
@@ -37,11 +43,13 @@
         ajax.addEventListener("core-response", function(e) {
             document.querySelector('#code').value = e.detail.response;
         });
-        document.querySelector('#run').addEventListener("click", function(event) {
+        var runGame= function(event) {
             document.querySelector('pixi-element').resetCanvas();
             var py = document.querySelector('python-element');
             py.run(document.querySelector('#code').value);
-        });
+        };
+        document.querySelector('#run').addEventListener("click",runGame);
+        document.querySelector('#run_top').addEventListener("click",runGame);
 
     });
     </script>
