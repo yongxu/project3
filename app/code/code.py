@@ -16,10 +16,10 @@ class Minion():
         self.map[x][y]=kind
     def setPosition(self,x,y):
         self.map[self.x][self.y]=EMPTY
-        self.x=x
-        self.y=y
-        self.sprite.moveTo(x,y)
-        self.map[x][y]=self.kind
+        self.x=x%21
+        self.y=y%21
+        self.sprite.moveTo(self.x,self.y)
+        self.map[self.x][self.y]=self.kind
     def getPosition(self):
         return (self.x,self.y)
     def aroundInfo(self):
@@ -43,19 +43,34 @@ class Minion():
         elif cmd=='right':
             return self.board.positionHas(self.x+1,self.y,okToLand)
 
+class Player(Minion):
+    def __init__(self,board,texture,x,y):
+        Minion.__init__(self,board,PLAYER,texture,x,y)
+    def setPosition(self,x,y):
+        self.map[self.x][self.y]=EMPTY
+        self.x=x%21
+        self.y=y%21
+        self.sprite.moveTo(self.x,self.y)
+        if self.map[self.x][self.y]==APPLE:
+            self.board.removeApple(self.x,self.y)
+        self.map[self.x][self.y]=self.kind
 
 
 class Board():
     def __init__(self,playerPos,monster1Pos,monster2Pos):
         self.map=[]
+        self.sprites=[]
         for i in range(0,21):
             self.map.append([])
+            self.sprites.append([])
             for j in range(0,21):
                 self.map[i].append(EMPTY)
+                self.sprites[i].append(None)
         self.createWalls()
-        self.player=Minion(self,PLAYER,"player",playerPos[0],playerPos[1])
+        self.player=Player(self,"player",playerPos[0],playerPos[1])
         self.monsters=[Minion(self,PLAYER,"draco green",monster1Pos[0],monster1Pos[1]),
                        Minion(self,PLAYER,"draco black",monster2Pos[0],monster2Pos[1])]
+        self.fillWithApples()
     def positionInfo(self,x,y):
         if not (0<=x<21 and 0<=y<21):
             return OUTSIDEMAP;
@@ -64,6 +79,7 @@ class Board():
 
     def positionHas(self,x,y,list):
         return self.positionInfo(x,y) in list
+
     def randomFind(self,target):
         x=random.randint(0,20)
         y=random.randint(0,20)
@@ -72,13 +88,29 @@ class Board():
         else:
             return self.randomFind(target)
 
+    def fillWithApples(self):
+        for x in range(0,21):
+            for y in range(0,21):
+                if self.map[x][y]==EMPTY:
+                    self.addApple(x,y)
+
+    def addApple(self,x,y):
+        self.sprites[x][y]=Sprite('apple',x,y)
+        self.map[x][y]=APPLE
+
+    def removeApple(self,x,y):
+        self.sprites[x][y].remove()
+        print "removeApple!"
+        self.map[x][y]=EMPTY
+
+
     def aroundInfo(self,x,y):
         return {'up':self.positionInfo(x,y-1),
                 'down':self.positionInfo(x,y+1),
                 'left':self.positionInfo(x-1,y),
                 'right':self.positionInfo(x+1,y)}
     def createWall(self,x,y):
-        Sprite('wall',x,y)
+        self.sprites[x][y]=Sprite('wall',x,y)
         self.map[x][y]=1
     def createWalls(self):
         for i in range(1,22):

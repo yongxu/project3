@@ -25,8 +25,8 @@
       },
       ready:function(){
 
-        this.resetCanvas=tile(this.$.view,{
-          width:1000,
+        var tiles=tile(this.$.view,{
+          width:1000 ,
           height:800,
           backgroundColor:0xFFFFFF,
           transparent:false,
@@ -39,21 +39,26 @@
           canvasBackground:"../assets/grass1.png",
           background:"../assets/dirt0.png",
           spritesUrl:{
-          'wall':"../assets/crystal_wall02.png",
-          'teapot': "../assets/magic_lamp.png",
-          'gold pile': "../assets/gold_pile.png",
-          'apple': "../assets/apple.png",
-          'coin': "../assets/hud_coins.png",
-          'blue gem': "../assets/hud_gem_blue.png",
-          'red gem': "../assets/hud_gem_red.png",
-          'yellow gem': "../assets/hud_gem_yellow.png",
-          'dragon': "../assets/swamp_dragon.png",
-          'draco green': "../assets/draco-base-green.png",
-          'draco black': "../assets/draco-base-black.png",
-          'player' : "../assets/ancient_lich.png"
+            'wall':"../assets/crystal_wall02.png",
+            'teapot': "../assets/magic_lamp.png",
+            'gold pile': "../assets/gold_pile.png",
+            'apple': "../assets/apple.png",
+            'coin': "../assets/hud_coins.png",
+            'blue gem': "../assets/hud_gem_blue.png",
+            'red gem': "../assets/hud_gem_red.png",
+            'yellow gem': "../assets/hud_gem_yellow.png",
+            'dragon': "../assets/swamp_dragon.png",
+            'draco green': "../assets/draco-base-green.png",
+            'draco black': "../assets/draco-base-black.png",
+            'player' : "../assets/ancient_lich.png"
           }
-        }).resetCanvas;
+        });
+        this.resetCanvas=tiles.resetCanvas;
+        this.resizeCanvas=tiles.resizeCanvas;
 
+        window.onresize=function(){
+          tiles.resizeCanvas(window.innerHeight*1.25,window.innerHeight);
+        };
       }
     });
   </script>
