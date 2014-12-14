@@ -1,8 +1,10 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <script src="../bower_components/pixi/bin/pixi.dev.js"></script>
+<script src="../src/skulpt-async.js"></script>
+<script src="../src/skulpt-keyboard.js"></script>
+<script src="../src/tile.js"></script>
 
 <polymer-element name="pixi-element" constructor="PixiElement" attributes="width height">
-  <script src="animation.js"></script>
   <template>
     <canvas id="view">
     </canvas>
@@ -22,8 +24,21 @@
         gridHeight :21
       },
       ready:function(){
-        animation.bind(this)();
-        var spritesurl={
+
+        this.resetCanvas=tile(this.$.view,{
+          width:1000,
+          height:800,
+          backgroundColor:0xFFFFFF,
+          transparent:false,
+          antialias:true,
+          preserveDrawingBuffer:false,
+          resolution:1,
+          tileSize :32,
+          gridWidth :21,
+          gridHeight :21,
+          canvasBackground:"../assets/grass1.png",
+          background:"../assets/dirt0.png",
+          spritesUrl:{
           'wall':"../assets/crystal_wall02.png",
           'teapot': "../assets/magic_lamp.png",
           'gold pile': "../assets/gold_pile.png",
@@ -36,16 +51,9 @@
           'draco green': "../assets/draco-base-green.png",
           'draco black': "../assets/draco-base-black.png",
           'player' : "../assets/ancient_lich.png"
-        }
-        this.initTileGrid({canvasBackground:"../assets/grass1.png", background:"../assets/dirt0.png",spritesUrl:spritesurl});
- /*       this.addSprite('blue gem', 5, 5);
-        this.addSprite('coin', 5, 6);
-        this.addSprite('apple', 5, 7);
+          }
+        }).resetCanvas;
 
-        this.addSprite('wall', 10, 10);
-        this.addSprite('dragon', 12, 12);
-        this.addSprite('draco green', 10, 12);
-        this.addSprite('player', 13, 12);*/
       }
     });
   </script>

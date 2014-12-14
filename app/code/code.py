@@ -154,9 +154,7 @@ def key(k,id):
         if board.player.okToMove("left",[EMPTY,APPLE]):
             board.player.move("left")
     elif id=="Right":
-        print board.player.okToMove("right",[EMPTY,APPLE])
         if board.player.okToMove("right",[EMPTY,APPLE]):
-            print "moveright"
             board.player.move("right")
 
 keydown(key)

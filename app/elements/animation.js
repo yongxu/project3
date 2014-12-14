@@ -150,46 +150,6 @@ function animation() {
             },Sk.ffi.remapToJs(delay)*1000);
             return id;
         });
-        goog.exportSymbol("Sk.builtin.asyncLoop", Sk.builtin.asyncLoop);
-        Sk.builtins["asyncLoop"]=Sk.builtin.asyncLoop;
-
-        Sk.builtin.clearAsyncLoop= new Sk.builtin.func(function(id) {
-            clearInterval(id);
-        });
-        goog.exportSymbol("Sk.builtin.clearAsyncLoop", Sk.builtin.clearAsyncLoop);
-        Sk.builtins["clearAsyncLoop"]=Sk.builtin.clearAsyncLoop;
-
-
-        Sk.builtin.async= new Sk.builtin.func(function(f,delay) {
-
-            return setTimeout(function(){
-                Sk.misceval.callsimOrSuspend(f);
-            },Sk.ffi.remapToJs(delay)*1000);
-
-        });
-        goog.exportSymbol("Sk.builtin.async", Sk.builtin.async);
-        Sk.builtins["async"]=Sk.builtin.async;
-
-        Sk.builtin.clearAsync= new Sk.builtin.func(function(id) {
-            clearTimeout(id);
-        });
-        goog.exportSymbol("Sk.builtin.clearAsync", Sk.builtin.clearAsync);
-        Sk.builtins["clearAsync"]=Sk.builtin.clearAsync;
-
-        Sk.builtin.keydown= new Sk.builtin.func(function(f) {
-
-            return window.addEventListener("keydown",function(event){
-                var key = event.keyCode || event.which;
-                if(event.keyIdentifier=="U+0020" || event.keyIdentifier=="Up" || event.keyIdentifier=="Down" ||
-                    event.keyIdentifier=="Right" || event.keyIdentifier=="Left")
-                    event.preventDefault();
-                Sk.misceval.callsimOrSuspend(f,Sk.ffi.remapToPy(event.keyCode),Sk.ffi.remapToPy(event.keyIdentifier));
-            });
-
-        });
-        goog.exportSymbol("Sk.builtin.keydown", Sk.builtin.keydown);
-        Sk.builtins["keydown"]=Sk.builtin.keydown;
-
 
     })();
 }
