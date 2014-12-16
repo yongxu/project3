@@ -28,6 +28,7 @@
 	        	},
                 read: builtinRead
             });
+            Sk.cleanUpEvents();
             try {
                 Sk.importMainWithBody("<stdin>", false, code,true);
             } catch (e) {

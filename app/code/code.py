@@ -81,6 +81,7 @@ class Board():
     def __init__(self,playerPos,monster1Pos,monster2Pos):
         self.map=[]
         self.sprites=[]
+        self.applesOnBoard=0
         for i in range(0,21):
             self.map.append([])
             self.sprites.append([])
@@ -138,7 +139,10 @@ class Board():
                     self.addApple(x,y)
 
     def addApple(self,x,y):
+        if self.map[x][y] & APPLE:
+            return
         self.removeSprite(x,y)
+        self.applesOnBoard+=1
         self.sprites[x][y]=Sprite('apple',x,y)
         self.map[x][y]=self.map[x][y] ^ APPLE
 
@@ -147,6 +151,8 @@ class Board():
             if self.sprites[x][y]!=None:
                 self.sprites[x][y].remove()
             self.map[x][y]=self.map[x][y] & (~APPLE)
+            self.applesOnBoard-=1
+
 
     def removeSprite(self,x,y):
         if self.map[x][y] & NOT_MONSTER_PLAYER:
@@ -269,6 +275,11 @@ def resetAfterDead():
     alert("You are dead!\nscore:"+str(board.player.score))
     board.reset((1,1),(1,18),(3,3))
 
+def winGame():
+    print "You win!\nscore:score",board.player.score
+    alert("You win!\nscore:"+str(board.player.score))
+    board.reset((1,1),(1,18),(3,3))
+
 def monstersAgent():
     res=bfs(board.map,board.player.getPosition(),MONSTER,len(board.monsters))
     for m in res:
@@ -304,6 +315,10 @@ def key(k,id):
         return
 
     monstersAgent()
+
+    if board.applesOnBoard==0:
+        async(winGame,0.2)
+
 
 
 keydown(key)
