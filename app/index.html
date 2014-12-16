@@ -32,6 +32,8 @@
     <link rel="import" href="../bower_components/core-menu/core-menu.html">
     <link rel="import" href="../bower_components/core-item/core-item.html">
 
+    <link href="styles/index.css" rel="stylesheet">
+
 </head>
 
 <body unresolved>
@@ -66,7 +68,7 @@
             </section>
             <section>
                 <div vertical layout flex>
-                    <textarea id="code" rows="60">
+                    <textarea id="code">
                         loading.........
                     </textarea>
                     <paper-button raised id="run">
@@ -96,45 +98,49 @@
         function outf(text){
             out.value+=text;
         }
+        selectPage(0);
         py.run(document.querySelector('#code').value,outf);
     }
 
-    var codeMirrorEditor=null;
     function selectPage(page){
       var pages = document.querySelector('core-animated-pages');
       var tabs = document.querySelector('paper-tabs');
       pages.selected=page;
       tabs.selected=page;
 
+      if(page==1)
+            setTimeout(function(){
+                codeMirrorEditor.refresh();
+            },10);
 
-        //this part does not work well
-        /*
-        if((page==1)&&(!codeMirrorEditor)){
-            var codeMirrorEditor = CodeMirror.fromTextArea(document.getElementById("code"), {
-              lineNumbers: true,
-              theme: "night",
-              mode:  "python",
-              extraKeys: {
-                "F11": function(cm) {
-                  cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-                },
-                "Esc": function(cm) {
-                  if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
-                }
-              }
-            });
-        }*/
     }
 
+
+
+    //this part does not work well
+    var codeMirrorEditor = CodeMirror.fromTextArea(document.getElementById("code"), {
+      lineNumbers: true,
+      theme: "night",
+      mode:  "python",
+      extraKeys: {
+        "F11": function(cm) {
+          cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+        },
+        "Esc": function(cm) {
+          if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+        }
+      }
+    });
 
     window.addEventListener('polymer-ready', function(e) {
         var ajax = document.querySelector("core-ajax");
         ajax.addEventListener("core-response", function(e) {
-            document.querySelector('#code').value = e.detail.response;
+//            document.querySelector('#code').value = e.detail.response;
+            codeMirrorEditor.setValue(e.detail.response);
+            codeMirrorEditor.save();
         });
         document.querySelector('#run').addEventListener("click",runGame);
         document.querySelector('#run_top').addEventListener("click",runGame);
-
         // var ch=window.innerHeight-64;
         // document.querySelector('pixi-element').resize(ch*1.1,ch);
     });
