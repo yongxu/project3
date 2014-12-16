@@ -10,7 +10,8 @@
 
     <link rel="import" href="elements/pixi-element.html">
     <link rel="import" href="elements/python-element.html">
-    <link href="../bower_components/core-icon/core-scaffold.html" rel="import">
+    <link href="../bower_components/core-scaffold/core-scaffold.html" rel="import">
+    <link href="../bower_components/core-animated-pages/core-animated-pages.html" rel="import">
     <link href="../bower_components/core-icon/core-icon.html" rel="import">
     <link href="../bower_components/core-icons/core-icons.html" rel="import">
     <link href="../bower_components/core-ajax/core-ajax.html" rel="import">
@@ -24,22 +25,51 @@
 </head>
 
 <body unresolved>
-    <paper-fab id="run_top" style="position: absolute; top:10px; left:10px; color: #fff;" icon="arrow-forward" title="run" role="button" aria-label="arrow-forward"></paper-fab>
-    <div>
-        <pixi-element flex></pixi-element>
-    </div>
 
-    <div vertical layout flex>
-        <textarea id="code" rows="40">
-            loading.........
-        </textarea>
-        <paper-button raised id="run">
-            <core-icon icon="favorite"></core-icon>
-            execute
-        </paper-button>
-        <python-element flex></python-element>
-    </div>
+    <core-scaffold responsiveWidth="1000px" drawerWidth="150px">
+
+    <core-animated-pages onclick="stuff();" transitions="cross-fade-all">
+        <section>
+            <div layout vertical center center-justified style="background:red;">
+                <div>1</div>
+            </div>
+        </section>
+        <section>
+            <div layout vertical center center-justified style="background:blue;">
+                <div>2</div>
+            </div>
+        </section>
+    </core-animated-pages>
+
+        <core-header-panel navigation flex mode="seamed">
+            <core-toolbar style="background-color: #526E9C; color: #fff;">
+                <span flex>Title</span>
+            </core-toolbar>
+            <core-menu>
+                <core-item icon="settings" label="game"></core-item>
+                <core-item icon="settings" label="code"></core-item>
+            </core-menu>
+        </core-header-panel>
+
+        <div flex>
+            <paper-fab id="run_top" style="position: absolute; top:10px; left:10px; color: #fff;" icon="arrow-forward" title="run" role="button" aria-label="arrow-forward"></paper-fab>
+            <pixi-element flex></pixi-element>
+        </div>
+
+        <div vertical layout flex>
+            <textarea id="code" rows="40">
+                loading.........
+            </textarea>
+            <paper-button raised id="run">
+                <core-icon icon="favorite"></core-icon>
+                execute
+            </paper-button>
+        </div>
+    </core-scaffold>
+
+    <python-element flex></python-element>
     <core-ajax auto="" url="code/code.py" handleas="text" hidden=""></core-ajax>
+
     <script type="text/javascript">
     window.addEventListener('polymer-ready', function(e) {
         var ajax = document.querySelector("core-ajax");
