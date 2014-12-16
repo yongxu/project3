@@ -66,19 +66,29 @@
                         execute
                     </paper-button>
                 </div>
-                <python-element flex></python-element>
+
+                <div flex>
+                    <p>output:</p>
+                    <textarea id="output" rows="40"></textarea>
+                </div>
+
             </section>
         </core-animated-pages>
 
     </core-scaffold>
-
+    
+    <python-element flex></python-element>
     <core-ajax auto="" url="code/code.py" handleas="text" hidden=""></core-ajax>
 
     <script type="text/javascript">
     function runGame(event) {
         document.querySelector('pixi-element').resetCanvas();
         var py = document.querySelector('python-element');
-        py.run(document.querySelector('#code').value);
+        var out = document.querySelector('#output');
+        function outf(text){
+            out.value+=text;
+        }
+        py.run(document.querySelector('#code').value,outf);
     }
     function selectPage(page){
       var pages = document.querySelector('core-animated-pages');

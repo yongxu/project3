@@ -3,28 +3,18 @@
 
 <polymer-element name="python-element" >
     <template>
-        <div flex>
-            <content id="code"></content>
-            <p>output:</p>
-            <textarea id="output" rows="40"></textarea>
-        </div>
     </template>
     <script>
     Polymer({
-    	run:function(pycode){
+    	run:function(code,output_func){
             function builtinRead(x) {
                 if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
                     throw "File not found: '" + x + "'";
                 return Sk.builtinFiles["files"][x];
             }
-            var outf = function(text){
-            	this.$.output.value+=text;
-            }.bind(this);
-            var code = pycode? pycode : this.$.code.getDistributedNodes()[0].data;
-            this.$.output.setAttribute('async',true);;
             Sk.configure({
                 output: function (text) {
-	 				outf(text);
+	 				output_func(text);
 	        	},
                 read: builtinRead
             });
