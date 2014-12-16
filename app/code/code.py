@@ -9,7 +9,6 @@ MONSTER_PLAYER=(MONSTER+PLAYER)
 APPLE=8
 OUTSIDEMAP=1024
 
-
 class Minion():
     def __init__(self,board,kind,texture,x,y):
         self.board=board
@@ -242,7 +241,7 @@ def bfs(map,start,Lookingfor,n=-1):
         for (x,y) in adjacentPos(pos[0],pos[1]):
 
             if (not (0<=x<21 and 0<=y<21)) or record[x][y]!=None:
-               pass 
+               pass
             elif map[x][y] & Lookingfor:
                 n=n-1
                 record[x][y]=pos
@@ -278,7 +277,7 @@ def test():
 
 def key(k,id):
     print k,id
-    if id=="Up":  
+    if id=="Up":
         if board.player.okToMove("up",EMPTY^APPLE):
             board.player.move("up")
     elif id=="Down":

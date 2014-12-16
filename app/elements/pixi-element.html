@@ -11,9 +11,9 @@
   </template>
   <script>
     Polymer({
-      width:1000,
-      height:800,
       publish: {
+        width:1280,
+        height:720,
         backgroundColor:0xFFFFFF,
         transparent:false,
         antialias:true,
@@ -23,9 +23,14 @@
         gridWidth :21,
         gridHeight :21
       },
+      resize:function(width,height){
+          this.width=width;
+          this.height=height;
+          this.tiles.resizeCanvas(width,height);
+      },
       ready:function(){
 
-        var tiles=tile(this.$.view,{
+        var tiles=this.tiles=tile(this.$.view,{
           width:this.width ,
           height:this.height,
           backgroundColor:0xFFFFFF,
@@ -33,7 +38,7 @@
           antialias:true,
           preserveDrawingBuffer:false,
           resolution:1,
-          tileSize :32,
+          tileSize :null,
           gridWidth :21,
           gridHeight :21,
           canvasBackground:"../assets/grass1.png",
