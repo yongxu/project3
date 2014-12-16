@@ -25,12 +25,15 @@ many of these things may require *sudo*
 
         $ gulp
 + By default is [http://localhost:3000/](http://localhost:3000/)
+
 ######Game View
 <img src="http://i.imgbox.com/yrTSsv09.png" width="500px" height="300px" />
+
 ######Code View
 + Python code in here is executed
 + Is initially stored in <code>project3/app/code/code.py</code>
 <img src="http://i.imgbox.com/xWNYtzTC.png" width="500px" height="300px" />
+
 ### Live Demo 
 + Can be viewed at [yongxuren.com](yongxuren.com)
 
