@@ -1,0 +1,50 @@
+<link href="../bower_components/paper-button/paper-button.html" rel="import">
+<link href="../bower_components/paper-dialog/paper-dialog.html" rel="import">
+<link href="../bower_components/paper-action-dialog/paper-action-dialog.html" rel="import">
+
+
+<polymer-element name="paper-action-dialog" constructor="pythonDialog" attributes="title text ok decline accept">
+  <template>
+    <paper-action-dialog heading="{{title}}">
+      <p>{{text}}</p>
+      <paper-button dismissive>{{more}}</paper-button>
+      <paper-button affirmative>{{decline}}</paper-button>
+      <paper-button affirmative autofocus>{{accept}}</paper-button>
+    </paper-action-dialog>
+  </template>
+  <script>
+    Polymer({
+      more:"More Info...",
+      decline:"Decline",
+      accept:"Accept",
+      ready:function(){
+      }
+    });
+    (function(){
+        Sk.builtin.dialog= new Sk.builtin.func(function(text,ok,cancle) {
+
+
+        });
+        goog.exportSymbol("Sk.builtin.dialog", Sk.builtin.dialog);
+        Sk.builtins["dialog"]=Sk.builtin.dialog;
+
+        var Dialog=Sk.misceval.buildClass({"__name__":""},function($gbl, $loc){
+
+            $loc.__init__ = new Sk.builtin.func(function (self,text) {
+                self.dialog=new pythonDialog();
+            });
+
+            $loc.hide=$loc.remove=new Sk.builtin.func(function(self){
+            });
+
+            $loc.show=$loc.putBack=new Sk.builtin.func(function(self){
+            });
+
+        },"Dialog");
+
+        Sk.builtin.Dialog=Dialog;
+        goog.exportSymbol("Sk.builtin.Dialog", Sk.builtin.Dialog);
+        Sk.builtins["Dialog"]=Sk.builtin.Dialog;
+    })();
+  </script>
+</polymer-element>

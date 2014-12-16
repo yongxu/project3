@@ -299,3 +299,5 @@ def key(k,id):
             return # dead
         monster.setPosition(m['path'][-2][0],m['path'][-2][1])
 keydown(key)
+
+alert("start")
