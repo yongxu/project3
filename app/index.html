@@ -88,9 +88,24 @@
     </core-scaffold>
     
     <python-element flex></python-element>
-    <core-ajax auto="" url="code/code.py" handleas="text" hidden=""></core-ajax>
+    <core-ajax auto="" url="code/abp.py" handleas="text" hidden=""></core-ajax>
 
     <script type="text/javascript">
+
+    var codeMirrorEditor = CodeMirror.fromTextArea(document.getElementById("code"), {
+      lineNumbers: true,
+      theme: "night",
+      mode:  "python",
+      extraKeys: {
+        "F11": function(cm) {
+          cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+        },
+        "Esc": function(cm) {
+          if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+        }
+      }
+    });
+
     function runGame(event) {
         document.querySelector('pixi-element').resetCanvas();
         var py = document.querySelector('python-element');
@@ -98,8 +113,8 @@
         function outf(text){
             out.value+=text;
         }
-        selectPage(0);
-        py.run(document.querySelector('#code').value,outf);
+//        selectPage(0);
+        py.run(codeMirrorEditor.getValue(),outf);
     }
 
     function selectPage(page){
@@ -115,25 +130,9 @@
 
     }
 
-
-
-    //this part does not work well
-    var codeMirrorEditor = CodeMirror.fromTextArea(document.getElementById("code"), {
-      lineNumbers: true,
-      theme: "night",
-      mode:  "python",
-      extraKeys: {
-        "F11": function(cm) {
-          cm.setOption("fullScreen", !cm.getOption("fullScreen"));
-        },
-        "Esc": function(cm) {
-          if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
-        }
-      }
-    });
-
     window.addEventListener('polymer-ready', function(e) {
         var ajax = document.querySelector("core-ajax");
+        selectPage(1);
         ajax.addEventListener("core-response", function(e) {
 //            document.querySelector('#code').value = e.detail.response;
             codeMirrorEditor.setValue(e.detail.response);

@@ -63,6 +63,7 @@ gulp.task('serve', ['styles'], function () {
   gulp.watch(['app/*.html','app/elements/*.js','app/src/**/*.js'], reload);
   gulp.watch(['app/src/**/*.coffee'], ['coffee']);
   gulp.watch(['app/styles/**/*.{scss,css}'], ['styles']);
+  gulp.watch(['app/code/**/*.{py,js}'], reload);
 //  gulp.watch(['app/src/**/*.js'], ['jshint']);
 });
 
