@@ -88,6 +88,10 @@ class Board():
         self.monsters=[Minion(self,MONSTER,"draco green",monster1Pos[0],monster1Pos[1]),
                        Minion(self,MONSTER,"draco black",monster2Pos[0],monster2Pos[1])]
 
+    def reset(self,playerPos,monster1Pos,monster2Pos):
+        removeAllSprites()
+        self.__init__(playerPos,monster1Pos,monster2Pos)
+
     def getMonster(self,pos):
         for m in self.monsters:
             if m.getPosition()==pos:
@@ -239,7 +243,6 @@ def bfs(map,start,Lookingfor,n=-1):
     while len(frontier)!=0:
         pos=frontier.pop(0)
         for (x,y) in adjacentPos(pos[0],pos[1]):
-
             if (not (0<=x<21 and 0<=y<21)) or record[x][y]!=None:
                pass
             elif map[x][y] & Lookingfor:
@@ -290,14 +293,25 @@ def key(k,id):
         if board.player.okToMove("right",EMPTY^APPLE):
             print "right"
             board.player.move("right")
+    elif k==82:
+        board.reset((1,1),(1,18),(3,3))
+        return
 
-    res=bfs(board.map,board.player.getPosition(),MONSTER,2)
+    # player_pos=board.player.getPosition();
+    # for m in board.monsters:
+    #     if m.getPosition() in adjacentPos(player_pos[0],player_pos[1]):
+    #         alert("You are dead!")
+    #         board.reset((1,1),(1,18),(3,3))
+    #         return
+
+    res=bfs(board.map,board.player.getPosition(),MONSTER,len(board.monsters))
     print res
     for m in res:
         monster=board.getMonster(m['end'])
         if len(m['path'])==1:
             return # dead
         monster.setPosition(m['path'][-2][0],m['path'][-2][1])
-keydown(key)
 
-alert("start")
+
+
+keydown(key)
