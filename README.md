@@ -13,11 +13,8 @@ For this final project we have extended the functionality of the Happy Poison ga
 
 ####Bower - Web package manager
     $ bower install
-####Gulp - Realtime Testing
 
-    $ npm install gulp
-
-many of these things may require *sudo*
+npm may require *sudo*
 
 ####Usage
 ###### Local Server
