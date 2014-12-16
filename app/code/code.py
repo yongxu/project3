@@ -13,9 +13,9 @@ class Minion():
     def __init__(self,board,kind,texture,x,y):
         self.board=board
         self.map=board.map
+        self.isDead=False
         self.x=x
         self.y=y
-        board.removeSprite(x,y)
         self.sprite=Sprite(texture,x,y)
         self.kind=kind
         self.map[x][y]=self.map[x][y] ^ kind
@@ -35,6 +35,10 @@ class Minion():
     def remove(self):
         self.map[self.x][self.y]=self.map[self.x][self.y] & (~ self.kind)
         self.sprite.remove()
+
+    def setToDead(self):
+        self.isDead=True
+        self.sprite.setTexture("cloud fire")
 
     def move(self,cmd):
         if cmd=='up':
@@ -59,6 +63,7 @@ class Minion():
 class Player(Minion):
     def __init__(self,board,texture,x,y):
         self.score=0
+        board.removeSprite(x,y)
         Minion.__init__(self,board,PLAYER,texture,x,y)
     def setPosition(self,x,y):
         x=x%21
@@ -258,28 +263,28 @@ def bfs(map,start,Lookingfor,n=-1):
     return found
 
 board=Board((1,1),(1,18),(3,3))
-#res=bfs(board.map,(1,1),MONSTER,2)
-#res=bfs(board.map,(1,1),APPLE,5)
-#print res
 
-def test():
- #   (x,y)=board.player.getPosition()
-#    print board.player.aroundInfo()
-    (x,y)=board.randomFind(0)
-    board.player.setPosition(x,y)
-    (x,y)=board.randomFind(0)
-    board.monsters[0].setPosition(x,y)
-    (x,y)=board.randomFind(0)
-    board.monsters[1].setPosition(x,y)
-#    board.player.setPosition((x+1)%20,(y+1)%20)
-#id=asyncLoop(test,0.1)
-# def clearLoop():
-#     print "loop stoped!"
-#     clearAsyncLoop(id)
-# async(clearLoop,5)
+def resetAfterDead():
+    print "You are dead!\nscore:score",board.player.score
+    alert("You are dead!\nscore:"+str(board.player.score))
+    board.reset((1,1),(1,18),(3,3))
+
+def monstersAgent():
+    res=bfs(board.map,board.player.getPosition(),MONSTER,len(board.monsters))
+    for m in res:
+        monster=board.getMonster(m['end'])
+        if len(m['path'])==1:
+            monster.setPosition(m['start'][0],m['start'][1])
+            if not board.player.isDead:
+                async(resetAfterDead,0.2)
+            board.player.setToDead()
+            break # dead
+        monster.setPosition(m['path'][-2][0],m['path'][-2][1])
 
 def key(k,id):
     print k,id
+    if board.player.isDead:
+        return
     if id=="Up":
         if board.player.okToMove("up",EMPTY^APPLE):
             board.player.move("up")
@@ -291,27 +296,14 @@ def key(k,id):
             board.player.move("left")
     elif id=="Right":
         if board.player.okToMove("right",EMPTY^APPLE):
-            print "right"
             board.player.move("right")
     elif k==82:
         board.reset((1,1),(1,18),(3,3))
         return
+    else:
+        return
 
-    # player_pos=board.player.getPosition();
-    # for m in board.monsters:
-    #     if m.getPosition() in adjacentPos(player_pos[0],player_pos[1]):
-    #         alert("You are dead!")
-    #         board.reset((1,1),(1,18),(3,3))
-    #         return
-
-    res=bfs(board.map,board.player.getPosition(),MONSTER,len(board.monsters))
-    print res
-    for m in res:
-        monster=board.getMonster(m['end'])
-        if len(m['path'])==1:
-            return # dead
-        monster.setPosition(m['path'][-2][0],m['path'][-2][1])
-
+    monstersAgent()
 
 
 keydown(key)

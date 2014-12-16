@@ -139,6 +139,11 @@ function tile(canvas,options) {
                 self.sprite.moveTo(self.x,self.y);
             });
 
+            $loc.setTexture = new Sk.builtin.func(function (self,name) {
+                self.name=name.v;
+                self.sprite.setTexture(spriteTextures[self.name]);
+            });
+
             $loc.position=$loc.moveTo;
 
             $loc.hide=$loc.remove=new Sk.builtin.func(function(self){
