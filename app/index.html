@@ -17,21 +17,31 @@
     <link href="../bower_components/core-ajax/core-ajax.html" rel="import">
     <link href="../bower_components/paper-button/paper-button.html" rel="import">
     <link href="../bower_components/paper-fab/paper-fab.html" rel="import">
+    <link href="../bower_components/paper-tabs/paper-tabs.html" rel="import">
 
 
     <link rel="import" href="../bower_components/core-header-panel/core-header-panel.html">
     <link rel="import" href="../bower_components/core-menu/core-menu.html">
     <link rel="import" href="../bower_components/core-item/core-item.html">
+
 </head>
 
 <body unresolved>
 
     <core-scaffold responsiveWidth="1000px" drawerWidth="150px">
 
-        <div tool flex id="toolbar" >toolbar</div>
+        <div tool flex id="toolbar" >
+            <div class="bottom fit" horizontal layout>
+                <paper-tabs selected="0" flex style="max-width: 600px;">
+                    <paper-tab onclick="selectPage(0)">GAME</paper-tab>
+                    <paper-tab onclick="selectPage(1)">CODE</paper-tab>
+                    <paper-tab>SETTINGS</paper-tab>
+                </paper-tabs>
+            </div>
+        </div>
         <core-header-panel navigation flex mode="seamed">
             <core-toolbar style="background-color: #526E9C; color: #fff;">
-                <span flex>Title</span>
+                <span flex>TILE</span>
             </core-toolbar>
             <core-menu>
                 <core-item icon="settings" label="game" onclick="selectPage(0)"></core-item>
@@ -71,8 +81,10 @@
         py.run(document.querySelector('#code').value);
     }
     function selectPage(page){
-      var p = document.querySelector('core-animated-pages');
-      p.selected=page;
+      var pages = document.querySelector('core-animated-pages');
+      var tabs = document.querySelector('paper-tabs');
+      pages.selected=page;
+      tabs.selected=page;
     }
     window.addEventListener('polymer-ready', function(e) {
         var ajax = document.querySelector("core-ajax");

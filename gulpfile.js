@@ -66,6 +66,24 @@ gulp.task('serve', ['styles'], function () {
 //  gulp.watch(['app/src/**/*.js'], ['jshint']);
 });
 
+gulp.task('static-server', ['styles'], function () {
+  browserSync({
+    port:80,
+    notify: false,
+    // Customize the BrowserSync console logging prefix
+    logPrefix: 'WSK',
+    // Run as an https by uncommenting 'https: true'
+    // Note: this uses an unsigned certificate which on first access
+    //       will present a certificate warning in the browser.
+    // https: true,
+    server: ['./app','app/elements/*.js','app/assets', 'app/dest','app/lib']
+  });
+
+  gulp.watch(['app/*.html','app/elements/*.js','app/src/**/*.js'], reload);
+  gulp.watch(['app/src/**/*.coffee'], ['coffee']);
+  gulp.watch(['app/styles/**/*.{scss,css}'], ['styles']);
+});
+
 gulp.task('server-static-clean', function () {
   return gulp.src('server/static', {read: false})
     .pipe($.clean());
