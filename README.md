@@ -37,5 +37,5 @@ npm may require *sudo*
 
 
 #### Implementation
-+ Using a BREDTH FIRST SEARCH (BFS) the dragon sprites will atttempt to catch the blue wizard
-+ Using a ALPHA-BETA-SEARCH the dragon sprites will attempt to catch the blue wizard
++ Using a BREDTH FIRST SEARCH (BFS) to find the path that the dragon sprites will atttempt to catch the blue wizard
++ Using a ALPHA-BETA-SEARCH for the wizard in auto play
