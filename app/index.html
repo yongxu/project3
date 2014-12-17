@@ -26,6 +26,7 @@
     <link href="../bower_components/paper-button/paper-button.html" rel="import">
     <link href="../bower_components/paper-fab/paper-fab.html" rel="import">
     <link href="../bower_components/paper-tabs/paper-tabs.html" rel="import">
+    <link rel="import" href="../bower_components/core-tooltip/core-tooltip.html">
 
 
     <link rel="import" href="../bower_components/core-header-panel/core-header-panel.html">
@@ -62,7 +63,9 @@
         <core-animated-pages flex transitions="cross-fade-all">
             <section>
                 <div layout vertical center center-justified>
-                    <paper-fab id="run_top" style="position: absolute; top:10px; left:10px; color: #fff;" icon="arrow-forward" title="run" role="button" aria-label="arrow-forward"></paper-fab>
+                    <core-tooltip label="Click to Start Game" position="right" style="position: absolute; top:10px; left:10px; " show>
+                        <paper-fab id="run_top" style="color: #fff;" icon="arrow-forward" title="run" role="button" aria-label="arrow-forward"></paper-fab>
+                    </core-tooltip>
                     <pixi-element></pixi-element>
                 </div>
             </section>
@@ -107,6 +110,7 @@
     });
 
     function runGame(event) {
+        document.querySelector('core-tooltip').show=false;
         document.querySelector('pixi-element').resetCanvas();
         var py = document.querySelector('python-element');
         var out = document.querySelector('#output');
