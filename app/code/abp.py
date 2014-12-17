@@ -66,7 +66,10 @@ class Minion():
 class Player(Minion):
     def __init__(self,board,texture,x,y):
         self.score=0
-        board.removeSprite(x,y)
+        if board.map[x][y] & APPLE:
+            board.removeApple(x,y)
+        else:
+            board.removeSprite(x,y)
         Minion.__init__(self,board,PLAYER,texture,x,y)
     def setPosition(self,x,y):
         x=x%BOARD_SIZE
@@ -81,7 +84,7 @@ class Player(Minion):
 
 
 class Board():
-    def __init__(self,playerPos,monster1Pos,monster2Pos):
+    def __init__(self,playerPos=None,monster1Pos=None,monster2Pos=None):
         self.map=[]
         self.sprites=[]
         self.applesOnBoard=0
@@ -93,13 +96,20 @@ class Board():
                 self.sprites[i].append(None)
         self.createWalls()
         self.fillWithApples()
+        if playerPos!=None:
+            self.setSpritesPosition(playerPos,monster1Pos,monster2Pos)
+
+    def setSpritesPosition(self,playerPos,monster1Pos,monster2Pos):
         self.player=Player(self,"player",playerPos[0],playerPos[1])
         self.monsters=[Minion(self,MONSTER,"draco green",monster1Pos[0],monster1Pos[1]),
                        Minion(self,MONSTER,"draco black",monster2Pos[0],monster2Pos[1])]
 
-    def reset(self,playerPos,monster1Pos,monster2Pos):
+    def reset(self,playerPos=None,monster1Pos=None,monster2Pos=None):
         removeAllSprites()
-        self.__init__(playerPos,monster1Pos,monster2Pos)
+        if playerPos!=None:
+            self.__init__(playerPos,monster1Pos,monster2Pos)
+        else:
+            self.__init__()
 
     def getMonster(self,pos):
         for m in self.monsters:
@@ -296,22 +306,14 @@ def costToPlayer(pos):
 
 
 
-board=Board((1,1),(1,18),(3,3))
+#board=Board((1,1),(1,18),(3,3))
 
-def resetAfterDead():
-    print "You are dead!\nscore:score",board.player.score
-    alert("You are dead!\nscore:"+str(board.player.score))
-    board.reset((1,1),(1,18),(3,3))
-
-def winGame():
-    print "You win!\nscore:score",board.player.score
-    alert("You win!\nscore:"+str(board.player.score))
-    board.reset((1,1),(1,18),(3,3))
+board=Board()
 
 def monstersAgent():
     (res,record)=bfs(board.map,board.player.getPosition(),{MONSTER:2})
     for m in res:
-        print m,findPath(m,record)
+#        print m,findPath(m,record)
         if m['kind']!=MONSTER:
             continue;
         path=findPath(m,record)
@@ -322,9 +324,11 @@ def monstersAgent():
                 async(resetAfterDead,0.2)
             board.player.setToDead()
             break # dead
+        if board.map[path[-2][0]][path[-2][1]] & MONSTER:
+            continue
         monster.setPosition(path[-2][0],path[-2][1])
 
-def key(k,id):
+def HvsC_keyDetect(k,id):
     print k,id
     if board.player.isDead:
         return
@@ -364,9 +368,25 @@ def mapCopy(map):
             cp[i].append(map[i][j])
     return cp
 
-def stateHeuristic(state):
-    print state
-    return (0,None)
+def stateHeuristic(state,map):
+    (px,py)=state[0][-1]
+    (mx1,my1)=state[1][-1]
+    (mx2,my2)=state[2][-1]
+
+
+    if ( px==mx1 and py==my1 ) or ( px==mx2 and py==my2 ):
+        return (-1000000,state) #dead
+
+    v=min(distance((px,py),(mx1,my1)),4)+min(distance((px,py),(mx2,my2)),4)
+    if map[px][py]==APPLE:
+        v+=3
+    (res,record)=bfs(map,(px,py),{APPLE:3})
+    appleCount=0.0
+    applesWeight=0.0
+    for ap in res:
+        applesWeight-=distance((px,py),ap['end'])
+    v+=applesWeight/max(1,appleCount)
+    return (v,state)
 
 def validActions(pos,map):
     actions=[]
@@ -383,6 +403,8 @@ def validPlayerActions(state):
 
     actions=[]
     for (x,y) in adjacentPos(pos[0],pos[1]):
+        x=x%BOARD_SIZE
+        y=y%BOARD_SIZE
         if map[x][y]!=WALL and ( x!=mx1 or y!=my1 ) and ( x!=mx2 or y!=my2 ):
             actions.append((x,y))
     return actions
@@ -406,8 +428,9 @@ def alphaBetaSearch(board,depth):
     state=([board.player.getPosition()],
             [board.monsters[0].getPosition()],[board.monsters[1].getPosition()])
     def maxValue(state,a,b,depth):
+ #       print depth, 'max:',a,b,state
         if depth==0: 
-            return stateHeuristic(state)
+            return stateHeuristic(state,map)
         v=float('-inf')
         for action in validPlayerActions(state):
             (minV,minS)=minValue( (state[0]+[action],state[1],state[2]), a,b,depth-1)
@@ -419,20 +442,75 @@ def alphaBetaSearch(board,depth):
         return (v,s)
 
     def minValue(state,a,b,depth):
+ #       print depth, 'min:',a,b,state
         if depth==0: 
-            return stateHeuristic(state)
+            return stateHeuristic(state,map)
         v=float('inf')
         for a1,a2 in validMonstersActions(state):
             (maxV,maxS)=maxValue( (state[0],state[1]+[a1],state[2]+[a2]), a,b,depth-1)
             if maxV<v:
                 (v,s)=(maxV,maxS)
-            if v<=b:
+            if v<=a:
                 return (v,s)
             b=min(b,v)
         return (v,s)
 
-    (v,action)=maxValue(state,a,b,depth)
-    return action
+    (v,actions)=maxValue(state,a,b,depth)
+    return actions
 
-alphaBetaSearch(board,2)
+def playerAgent():
+    actions=alphaBetaSearch(board,2)
+    print actions
+    board.player.setPosition(actions[0][1][0],actions[0][1][1])
 
+def autoPlay():
+    print 'player move'
+    playerAgent()
+    if board.applesOnBoard==0:
+        async(winGame,0.2)
+        return
+    print 'monsters move'
+    monstersAgent()
+    if not board.player.isDead:
+        async(autoPlay,0.2)
+
+def resetGame():
+    board.reset()
+    cleanUpEvents()
+    (x1,y1)=board.randomFind(APPLE)
+    (x2,y2)=board.randomFind(APPLE)
+    (x3,y3)=board.randomFind(APPLE)
+
+    if ( x1!=x2 or y1!=y2 ) and ( x1!=x2 or y1!=y2 ) and ( x2!=x3 or y2!=y3 ):
+        board.setSpritesPosition((x1,y1),(x2,y2),(x3,y3))
+    else:
+        resetGame()
+
+def choosePlayMode():
+    resetGame()
+    res=prompt('Choose game mode:\n 1: Auto Play, 2: Human vs Computer','1')
+    while True:
+        if not res:
+            return
+        elif res=='1':
+            autoPlay()
+            return
+        elif res=='2':
+            keydown(HvsC_keyDetect)
+            return
+        res=prompt('Invalid Input!!!\n Valid input: 1 or 2.\n 1: Auto Play, 2: Human vs Computer','1')
+
+
+def resetAfterDead():
+    print "You are dead!\nscore:score",board.player.score
+    alert("You are dead!\nscore:"+str(board.player.score))
+    #board.reset((1,1),(1,18),(3,3))
+    choosePlayMode()
+
+def winGame():
+    print "You win!\nscore:score",board.player.score
+    alert("You win!\nscore:"+str(board.player.score))
+    #board.reset((1,1),(1,18),(3,3))
+    choosePlayMode()
+
+choosePlayMode()
