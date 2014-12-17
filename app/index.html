@@ -118,6 +118,13 @@
             out.value+=text;
         }
 //        selectPage(0);
+
+        /*temporary solution for clear all timeouts. needs to be rewritten*/
+        var id = window.setTimeout(function() {}, 0);
+        while (id--) {
+            window.clearTimeout(id); // will do nothing if no timeout with id is present
+        }
+
         py.run(codeMirrorEditor.getValue(),outf);
     }
 

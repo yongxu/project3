@@ -462,8 +462,14 @@ def playerAgent():
     actions=alphaBetaSearch(board,2)
     print actions
     board.player.setPosition(actions[0][1][0],actions[0][1][1])
+    if len(validPlayerActions(actions))==0:
+            if not board.player.isDead:
+                async(resetAfterDead,0.2)
+            board.player.setToDead()
 
 def autoPlay():
+    if board.player.isDead:
+        return
     print 'player move'
     playerAgent()
     if board.applesOnBoard==0:
