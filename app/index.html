@@ -79,7 +79,7 @@
 
                 <div flex>
                     <p>output:</p>
-                    <textarea id="output" rows="30"></textarea>
+                    <textarea id="output" rows="30" cols="200"></textarea>
                 </div>
 
             </section>
@@ -132,7 +132,7 @@
 
     window.addEventListener('polymer-ready', function(e) {
         var ajax = document.querySelector("core-ajax");
-        selectPage(1);
+//        selectPage(1);
         ajax.addEventListener("core-response", function(e) {
 //            document.querySelector('#code').value = e.detail.response;
             codeMirrorEditor.setValue(e.detail.response);

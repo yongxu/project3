@@ -297,7 +297,7 @@ def winGame():
     board.reset((1,1),(1,18),(3,3))
 
 def monstersAgent():
-    (res,record)=bfs(board.map,board.player.getPosition(),{MONSTER:2,APPLE:100})
+    (res,record)=bfs(board.map,board.player.getPosition(),{MONSTER:2})
     for m in res:
         if m['kind']!=MONSTER:
             continue;

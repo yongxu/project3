@@ -1,5 +1,8 @@
 import random
 from math import *
+
+BOARD_SIZE=21
+
 EMPTY=0
 WALL=1
 MONSTER=2
@@ -21,9 +24,9 @@ class Minion():
         self.map[x][y]=self.map[x][y] | kind
 
     def setPosition(self,x,y):
-        self.map[self.x][self.y]=self.map[self.x][self.y] ^ self.kind
-        self.x=x%21
-        self.y=y%21
+        self.map[self.x][self.y]=self.map[self.x][self.y] & (~self.kind)
+        self.x=x%BOARD_SIZE
+        self.y=y%BOARD_SIZE
         self.sprite.moveTo(self.x,self.y)
         self.map[self.x][self.y]=self.map[self.x][self.y] | self.kind
 
@@ -33,7 +36,7 @@ class Minion():
         return self.board.aroundInfo(self.x,self.y);
 
     def remove(self):
-        self.map[self.x][self.y]=self.map[self.x][self.y] ^ self.kind
+        self.map[self.x][self.y]=self.map[self.x][self.y] & (~self.kind)
         self.sprite.remove()
 
     def setToDead(self):
@@ -66,8 +69,8 @@ class Player(Minion):
         board.removeSprite(x,y)
         Minion.__init__(self,board,PLAYER,texture,x,y)
     def setPosition(self,x,y):
-        x=x%21
-        y=y%21
+        x=x%BOARD_SIZE
+        y=y%BOARD_SIZE
         if self.map[x][y] & APPLE:
             self.score=self.score+1
             self.board.removeApple(x,y)
@@ -82,10 +85,10 @@ class Board():
         self.map=[]
         self.sprites=[]
         self.applesOnBoard=0
-        for i in range(0,21):
+        for i in range(0,BOARD_SIZE):
             self.map.append([])
             self.sprites.append([])
-            for j in range(0,21):
+            for j in range(0,BOARD_SIZE):
                 self.map[i].append(EMPTY)
                 self.sprites[i].append(None)
         self.createWalls()
@@ -106,9 +109,9 @@ class Board():
 
     def mapCopy(self):
         cp=[]
-        for i in range(0,21):
+        for i in range(0,BOARD_SIZE):
             cp.append([])
-            for j in range(0,21):
+            for j in range(0,BOARD_SIZE):
                 cp[i].append(self.map[i][j])
         return cp
 
@@ -116,13 +119,13 @@ class Board():
         return self.sprites[pos[0]][pos[1]]
 
     def positionInfo(self,x,y):
-        if not (0<=x<21 and 0<=y<21):
+        if not (0<=x<BOARD_SIZE and 0<=y<BOARD_SIZE):
             return OUTSIDEMAP;
         else:
             return self.map[x][y]
 
     def positionHas(self,x,y,has):
-        p=self.positionInfo(x%21,y%21);
+        p=self.positionInfo(x%BOARD_SIZE,y%BOARD_SIZE);
         return ( p & has ) or ( p == 0 )
 
     def randomFind(self,target):
@@ -134,8 +137,8 @@ class Board():
             return self.randomFind(target)
 
     def fillWithApples(self):
-        for x in range(0,21):
-            for y in range(0,21):
+        for x in range(0,BOARD_SIZE):
+            for y in range(0,BOARD_SIZE):
                 if self.map[x][y]==EMPTY:
                     self.addApple(x,y)
 
@@ -151,7 +154,7 @@ class Board():
         if self.map[x][y] & APPLE:
             if self.sprites[x][y]!=None:
                 self.sprites[x][y].remove()
-            self.map[x][y]=self.map[x][y] ^ APPLE
+            self.map[x][y]=self.map[x][y] & (~APPLE)
             self.applesOnBoard-=1
 
 
@@ -222,27 +225,18 @@ def distance(a,b):
 
 def recordMap():
     map=[]
-    for i in range(0,21):
+    for i in range(0,BOARD_SIZE):
         map.append([])
-        for j in range(0,21):
+        for j in range(0,BOARD_SIZE):
             map[i].append(None)
     return map
 
 def adjacentPos(x,y):
     return [(x-1,y),(x+1,y),(x,y-1),(x,y+1)]
 
-# class Agent():
-#     def __init__(self,board):
-#         self.board=board
-#         self.map=board.mapCopy()
-#         self.player=board.player.getPosition()
-#         self.monsters=[m.getPosition() for m in board.monsters]
-
-#     def findClosestApples(self,obj):
-
 def findPath(node,record):
     def getNext(record,pos,path):
-        (px,py)=record[pos[0]][pos[1]]
+        ((px,py),cost)=record[pos[0]][pos[1]]
         if px==pos[0] and py==pos[1]:
             return path
         else:
@@ -251,38 +245,56 @@ def findPath(node,record):
     (x,y)=node['end']
     return getNext(record,(x,y),[])
 
-def bfs(map,start,lookingFor):
+def bfs(map,start,lookingFor,finishMap=False):
     found=[]
-    frontier=[start]
+    frontier=[(start,0)]
     record=recordMap()
-    record[start[0]][start[1]]=start
+    record[start[0]][start[1]]=(start,0)
 
     lookingForTypes=0
     for t in lookingFor:
         lookingForTypes = lookingForTypes | t
 
-    if lookingForTypes==0:
+    if lookingForTypes ==0 and (not finishMap):
         return (found,record)
+
+    # check the if target is right at start
+    for t,v in lookingFor.items():
+        if (t & map[start[0]][start[1]]) and (v>0):
+            found.append( { 'start':start,'end':start,'kind':t } )
+            lookingFor[t] -= 1
+            if lookingFor[t] == 0 :
+                lookingForTypes = lookingForTypes & (~t)
+
     while len(frontier)!=0:
-        pos=frontier.pop(0)
+        (pos,cost)=frontier.pop(0)
         for (x,y) in adjacentPos(pos[0],pos[1]):
-            if (not (0<=x<21 and 0<=y<21)) or record[x][y]!=None:
+            if (not (0<=x<BOARD_SIZE and 0<=y<BOARD_SIZE)) or record[x][y]!=None:
                pass
             elif map[x][y] & lookingForTypes:
-                record[x][y]=pos
+                record[x][y]=(pos,cost+1)
                 for t,v in lookingFor.items():
                     if (t & map[x][y]) and (v>0):
                         found.append( { 'start':start,'end':(x,y),'kind':t } )
                         lookingFor[t] -= 1
                         if lookingFor[t] == 0 :
-                            lookingForTypes = lookingForTypes ^ t
-                if lookingForTypes==0:
+                            lookingForTypes = lookingForTypes & (~t)
+                if lookingForTypes==0 and (not finishMap):
                     return (found,record)
-                frontier.append((x,y))
+                frontier.append(((x,y),cost+1))
             elif not (map[x][y] & WALL):
-                record[x][y]=pos
-                frontier.append((x,y))
+                record[x][y]=(pos,cost+1)
+                frontier.append(((x,y),cost+1))
     return (found,record)
+
+def costToPlayer(pos):
+    (x,y)=pos
+    if record[x][y] != None:
+        return record[x][y][1]
+    else:
+        return -1
+
+
 
 board=Board((1,1),(1,18),(3,3))
 
@@ -297,14 +309,15 @@ def winGame():
     board.reset((1,1),(1,18),(3,3))
 
 def monstersAgent():
-    (res,record)=bfs(board.map,board.player.getPosition(),{MONSTER:2,APPLE:100})
+    (res,record)=bfs(board.map,board.player.getPosition(),{MONSTER:2})
     for m in res:
+        print m,findPath(m,record)
         if m['kind']!=MONSTER:
             continue;
         path=findPath(m,record)
         monster=board.getMonster(m['end'])
-        if len(path)==1:
-            monster.setPosition(m['start'][0],m['start'][1])
+        if len(path)<2:
+            monster.setPosition(m['start'][0],m['start'][1]) 
             if not board.player.isDead:
                 async(resetAfterDead,0.2)
             board.player.setToDead()
@@ -340,4 +353,86 @@ def key(k,id):
 
 
 
-keydown(key)
+#keydown(key)
+
+
+def mapCopy(map):
+    cp=[]
+    for i in range(0,BOARD_SIZE):
+        cp.append([])
+        for j in range(0,BOARD_SIZE):
+            cp[i].append(map[i][j])
+    return cp
+
+def stateHeuristic(state):
+    print state
+    return (0,None)
+
+def validActions(pos,map):
+    actions=[]
+    for (x,y) in adjacentPos(pos[0],pos[1]):
+        if map[x][y]!=WALL and (0<=x<BOARD_SIZE and 0<=y<BOARD_SIZE):
+            actions.append((x,y))
+    return actions
+
+def validPlayerActions(state):
+    pos=state[0][-1] #player path last
+    (mx1,my1)=state[1][-1] #monster 1 path last
+    (mx2,my2)=state[2][-1] #monster 2 path last
+    map=board.map
+
+    actions=[]
+    for (x,y) in adjacentPos(pos[0],pos[1]):
+        if map[x][y]!=WALL and ( x!=mx1 or y!=my1 ) and ( x!=mx2 or y!=my2 ):
+            actions.append((x,y))
+    return actions
+
+def validMonstersActions(state):
+    mp1=state[1][-1]
+    mp2=state[2][-1] 
+
+    actions=[]
+    for p1 in validActions(mp1,board.map):
+        for p2 in validActions(mp2,board.map):
+            actions.append((p1,p2))
+    return actions
+
+def alphaBetaSearch(board,depth):
+    a=float('-inf')
+    b=float('inf')
+    map=board.map
+
+    #player path, monster 1 path, monster 2 path
+    state=([board.player.getPosition()],
+            [board.monsters[0].getPosition()],[board.monsters[1].getPosition()])
+    def maxValue(state,a,b,depth):
+        if depth==0: 
+            return stateHeuristic(state)
+        v=float('-inf')
+        for action in validPlayerActions(state):
+            (minV,minS)=minValue( (state[0]+[action],state[1],state[2]), a,b,depth-1)
+            if minV>v:
+                (v,s)=(minV,minS)
+            if v>=b:
+                return (v,s)
+            a=max(a,v)
+        return (v,s)
+
+    def minValue(state,a,b,depth):
+        if depth==0: 
+            return stateHeuristic(state)
+        v=float('inf')
+        for a1,a2 in validMonstersActions(state):
+            (maxV,maxS)=maxValue( (state[0],state[1]+[a1],state[2]+[a2]), a,b,depth-1)
+            if maxV<v:
+                (v,s)=(maxV,maxS)
+            if v<=b:
+                return (v,s)
+            b=min(b,v)
+        return (v,s)
+
+    (v,action)=maxValue(state,a,b,depth)
+    return action
+
+alphaBetaSearch(board,2)
+
